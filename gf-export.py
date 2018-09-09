@@ -46,7 +46,7 @@ orders = robinhood.get_endpoint('orders')
 # raw_json = open('debug.txt','rU').read()
 # orders = ast.literal_eval(raw_json)
 
-# store debug 
+# store debug
 if args.debug:
     # save the CSV
     try:
@@ -74,8 +74,12 @@ while paginated:
             # Iterate over all the different executions
             for execution in executions:
                 # Get the Symbol of the order
-                fields[n]['symbol'] = cached_instruments.get(order['instrument'], robinhood.get_custom_endpoint(order['instrument'])['symbol'])
-                cached_instruments[order['instrument']] = fields[n]['symbol']
+                symbol = cached_instruments.get(order['instrument'], False)
+                if not symbol:
+                    symbol = robinhood.get_custom_endpoint(order['instrument'])['symbol']
+                    cached_instruments[order['instrument']] = symbol
+
+                fields[n]['symbol'] = symbol
 
                 # Get all the key,value from the order
                 for key, value in enumerate(order):
@@ -101,7 +105,7 @@ while paginated:
 
 #for i in fields:
 #     print fields[i]
-#     print "-------"    
+#     print "-------"
 #Fields stores ALL relevant information
 
 # check we have trade data to export
